@@ -1,0 +1,8 @@
+{
+  "name": "HIYOBON CAFE",
+  "short_name": "HIYOBON",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#142238",
+  "theme_color": "#142238"
+}

@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+    <link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#111827">
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js");
+  });
+}
+</script>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIYOBON CAFE | Management</title>
+<style>
+:root{--navy:#142238;--gold:#c9a45c;--bg:#f3f5f8;--white:#fff;--text:#202b3c;--muted:#8993a3;--line:#e7eaf0;--green:#16865c;--red:#d84c4c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;padding:11px 15px;font-weight:700}
+.primary{background:var(--navy);color:white}
+.gold{background:var(--gold);color:#18243a}
+.light{background:#edf0f5;color:#344158}
+.hidden{display:none!important}
+.login{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:var(--navy)}
+.brand{padding:10%;display:flex;flex-direction:column;justify-content:center;color:white;background:linear-gradient(140deg,#263c5a,#101a2b)}
+.brand h1{font-size:65px;letter-spacing:3px;margin:20px 0}
+.brand p{color:#c4cede;line-height:1.8;font-size:17px}
+.loginarea{display:grid;place-items:center;padding:25px;background:#f5f6f9}
+.loginbox{width:min(420px,100%);background:white;padding:35px;border-radius:18px;box-shadow:0 20px 60px #0002}
+.loginbox h2{margin-top:0}
+.field{display:flex;flex-direction:column;gap:7px;margin:15px 0}
+.field label{font-size:12px;font-weight:bold;color:#687487}
+.field input,.field select{padding:12px;border:1px solid var(--line);border-radius:8px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--gold)}
+.full{width:100%}
+.error{color:#d33;font-size:12px;margin:10px 0}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}
+.sidebar{background:var(--navy);color:white;padding:22px 14px}
+.logo{padding:5px 12px 25px;border-bottom:1px solid #ffffff20}
+.logo b{font-size:19px;letter-spacing:2px}
+.logo small{display:block;color:#aab7ca;margin-top:5px;letter-spacing:2px}
+.navtitle{font-size:10px;color:#8291a8;padding:24px 12px 9px;letter-spacing:2px}
+.nav button{display:block;width:100%;text-align:left;color:#c0cada;background:none;padding:13px 12px;margin:3px 0}
+.nav button:hover,.nav button.active{background:#ffffff18;color:white}
+.main{min-width:0}
+.topbar{height:70px;background:white;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 28px}
+.topbar h2{font-size:18px}
+.user{background:#f0f2f6;padding:10px 14px;border-radius:30px;font-size:12px;font-weight:bold}
+.content{padding:27px;max-width:1600px;margin:auto}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px}
+.head h1{margin:0;font-size:25px}
+.head p{margin:6px 0;color:var(--muted)}
+.grid{display:grid;gap:16px}
+.stats{grid-template-columns:repeat(4,1fr);margin-bottom:18px}
+.card{background:white;border:1px solid var(--line);border-radius:12px;padding:19px;box-shadow:0 5px 20px #13233c08}
+.statlabel{color:var(--muted);font-size:11px;font-weight:bold}
+.statvalue{font-size:26px;font-weight:800;margin:10px 0}
+.statfoot{font-size:11px;color:#9aa3b1}
+.two{grid-template-columns:1.2fr .8fr}
+.sectiontitle{font-size:15px;font-weight:bold;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{text-align:left;font-size:11px;color:#8993a3;padding:12px;border-bottom:1px solid var(--line)}
+td{padding:13px 12px;border-bottom:1px solid #f0f2f5;font-size:13px}
+.tablewrap{overflow:auto}
+.badge{padding:5px 9px;border-radius:20px;font-size:10px;font-weight:bold;background:#edf0f5}
+.green{background:#e4f6ed;color:#14754e}
+.orange{background:#fff2df;color:#98630d}
+.red{background:#fff0f0;color:#b93d3d}
+.blue{background:#eaf0ff;color:#355dc0}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}
+.toolbar input,.toolbar select{padding:10px;border:1px solid var(--line);border-radius:8px}
+.orderlayout{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.product{background:white;border:1px solid var(--line);padding:15px;text-align:left;border-radius:10px}
+.product:hover{border-color:var(--gold)}
+.product b{display:block;margin-bottom:8px}
+.product small{color:var(--muted)}
+.price{font-weight:bold;margin-top:10px}
+.cartline{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:12px 0;gap:8px}
+.qty{display:flex;align-items:center;gap:7px}
+.qty button{padding:5px 9px;background:#edf0f5}
+.total{display:flex;justify-content:space-between;padding:12px 0;font-size:19px;font-weight:bold;border-top:1px solid var(--line);margin-top:10px}
+.empty{text-align:center;color:#9aa3b1;padding:30px}
+.kitchen{grid-template-columns:repeat(3,1fr)}
+.ticket{background:white;border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:10px;padding:17px}
+.ticket h3{margin:0 0 6px}
+.ticket li{padding:4px 0}
+.actions{display:flex;gap:6px}
+.small{font-size:11px;padding:7px 9px}
+.modalbg{position:fixed;inset:0;background:#0008;display:grid;place-items:center;z-index:20;padding:20px}
+.modal{background:white;border-radius:15px;padding:25px;width:min(480px,100%)}
+.modalhead{display:flex;justify-content:space-between;align-items:center}
+.toast{position:fixed;bottom:20px;right:20px;background:#15243a;color:white;padding:14px 20px;border-radius:9px;z-index:40}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.products{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.login{grid-template-columns:1fr}.brand{padding:35px}.brand h1{font-size:42px}.app{grid-template-columns:1fr}.sidebar{padding:10px;position:sticky;top:0;z-index:5}.logo{padding:5px;border:0}.logo small,.navtitle{display:none}.nav{display:flex;overflow:auto;gap:4px}.nav button{width:auto;white-space:nowrap;padding:10px;font-size:11px}.content{padding:14px}.topbar{height:58px;padding:0 14px}.user{display:none}.orderlayout{grid-template-columns:1fr}.kitchen{grid-template-columns:1fr}.head h1{font-size:20px}}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login">
+ <div class="brand">
+  <div style="color:#d4b16b;letter-spacing:5px">CAFE MANAGEMENT SYSTEM</div>
+  <h1>HIYOBON<br>CAFE</h1>
+  <p>Professional restaurant management platform.<br>Buyurtmalar, kassa, oshxona va biznes nazorati.</p>
+ </div>
+ <div class="loginarea">
+  <div class="loginbox">
+   <h2 id="loginTitle">Tizimga kirish</h2>
+   <p id="loginDesc" style="color:#8993a3;font-size:13px">Hisobingiz orqali tizimga kiring.</p>
+   <div id="setup" class="hidden">
+    <div class="field"><label>ADMINISTRATOR ISMI</label><input id="newName" placeholder="Direktor"></div>
+    <div class="field"><label>LOGIN</label><input id="newUser" placeholder="O'zingiz tanlang"></div>
+    <div class="field"><label>PAROL</label><input id="newPass" type="password" placeholder="Kamida 6 belgi"></div>
+    <div class="field"><label>PAROLNI TASDIQLASH</label><input id="newPass2" type="password"></div>
+    <button class="primary full" onclick="createAdmin()">TIZIMNI SOZLASH</button>
+   </div>
+   <div id="signin">
+    <div class="field"><label>LOGIN</label><input id="username" placeholder="Login"></div>
+    <div class="field"><label>PAROL</label><input id="password" type="password" placeholder="Parol" onkeydown="if(event.key==='Enter')login()"></div>
+    <button class="primary full" onclick="login()">TIZIMGA KIRISH</button>
+   </div>
+   <div class="error" id="loginError"></div>
+   <small style="color:#8993a3">Birinchi ochishda o'zingiz login va parol yaratasiz.</small>
+  </div>
+ </div>
+</div>
+
+<div id="application" class="app hidden">
+ <aside class="sidebar">
+  <div class="logo"><b>HIYOBON CAFE</b><small>MANAGEMENT SYSTEM</small></div>
+  <div class="navtitle">ASOSIY BO'LIMLAR</div>
+  <nav class="nav">
+   <button class="active" data-page="dashboard">▦　 Bosh sahifa</button>
+   <button data-page="orders">▤　 Buyurtmalar</button>
+   <button data-page="neworder">＋　 Yangi buyurtma</button>
+   <button data-page="menu">☷　 Menyu boshqaruvi</button>
+   <button data-page="cash">▣　 Kassa</button>
+   <button data-page="kitchen">♨　 Oshxona</button>
+   <button data-page="staff">♙　 Xodimlar</button>
+   <button data-page="reports">▥　 Hisobotlar</button>
+   <button data-page="settings">⚙　 Sozlamalar</button>
+  </nav>
+ </aside>
+ <main class="main">
+  <header class="topbar">
+   <h2 id="pageTitle">Bosh sahifa</h2>
+   <div style="display:flex;align-items:center;gap:12px">
+    <span id="currentUser" class="user"></span>
+    <button class="light" onclick="logout()">Chiqish</button>
+   </div>
+  </header>
+  <div class="content" id="view"></div>
+ </main>
+</div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script>
+const STORAGE='HIYOBON_CAFE_DATABASE_V2';
+const money=n=>new Intl.NumberFormat('uz-UZ').format(n||0)+' so‘m';
+const today=()=>new Date().toISOString().slice(0,10);
+const time=()=>new Date().toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
+const hash=s=>{let h=2166136261;for(let c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return(h>>>0).toString(16)};
+const initialProducts=[
+['Lavash','Fast food',30000],['Shaurma','Fast food',28000],
+['Burger','Fast food',32000],['Strip burger','Fast food',35000],
+['Fri','Fast food',15000],['Naggets','Fast food',22000],
+['Margarita 25 sm','Pizza',45000],['Pepperoni 25 sm','Pizza',50000],
+['Coca-Cola','Ichimlik',10000],['Fanta','Ichimlik',10000],
+['Suv','Ichimlik',5000],['Choy','Bar',5000],['Kofe','Bar',12000]
+];
+let db=load(),user=null,cart=[],page='dashboard';
+
+function load(){
+ try{
+  let d=JSON.parse(localStorage.getItem(STORAGE));
+  if(d)return d;
+ }catch(e){}
+ return {users:[],products:initialProducts.map((p,i)=>({id:i+1,name:p[0],category:p[1],price:p[2],active:true})),orders:[]};
+}
+function save(){localStorage.setItem(STORAGE,JSON.stringify(db))}
+function id(){return Date.now()+Math.floor(Math.random()*1000)}
+function text(id){return document.getElementById(id)?.value.trim()||''}
+function notify(s){let x=document.getElementById('toastRoot');x.innerHTML='<div class="toast">'+s+'</div>';setTimeout(()=>x.innerHTML='',2500)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showLogin(){
+ if(!db.users.length){
+  document.getElementById('setup').classList.remove('hidden');
+  document.getElementById('signin').classList.add('hidden');
+  document.getElementById('loginTitle').textContent='Birinchi sozlash';
+  document.getElementById('loginDesc').textContent='Administrator hisobini o‘zingiz yarating.';
+ }
+}
+function createAdmin(){
+ let name=text('newName'),username=text('newUser'),p=document.getElementById('newPass').value,p2=document.getElementById('newPass2').value;
+ if(!name||!username||p.length<6)return loginError('Barcha maydonlarni to‘ldiring. Parol kamida 6 belgi.');
+ if(p!==p2)return loginError('Parollar bir xil emas.');
+ db.users.push({id:id(),name,username,password:hash(p),role:'Direktor',active:true});
+ save();user=db.users[0];enter();
+}
+function login(){
+ let username=text('username'),p=document.getElementById('password').value;
+ let found=db.users.find(x=>x.username===username&&x.password===hash(p)&&x.active!==false);
+ if(!found)return loginError('Login yoki parol noto‘g‘ri.');
+ user=found;enter();
+}
+function loginError(s){document.getElementById('loginError').textContent=s}
+function enter(){
+ document.getElementById('loginScreen').classList.add('hidden');
+ document.getElementById('application').classList.remove('hidden');
+ document.getElementById('currentUser').textContent=user.name+' · '+user.role;
+ render();
+}
+function logout(){
+ user=null;document.getElementById('application').classList.add('hidden');
+ document.getElementById('loginScreen').classList.remove('hidden');
+ document.getElementById('password').value='';
+}
+document.querySelector('.nav').addEventListener('click',e=>{
+ let b=e.target.closest('[data-page]');if(b)go(b.dataset.page);
+});
+function go(p){
+ page=p;
+ document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===p));
+ let names={dashboard:'Bosh sahifa',orders:'Buyurtmalar',neworder:'Yangi buyurtma',menu:'Menyu boshqaruvi',cash:'Kassa',kitchen:'Oshxona',staff:'Xodimlar',reports:'Hisobotlar',settings:'Sozlamalar'};
+ document.getElementById('pageTitle').textContent=names[p];render();
+}
+function render(){
+ let v=document.getElementById('view');
+ ({dashboard,orders,neworder,menu,cash,kitchen,staff,reports,settings}[page]||dashboard)(v);
+}
+function todayOrders(){return db.orders.filter(o=>o.date===today())}
+function dashboard(v){
+ let a=todayOrders(),paid=a.filter(o=>o.payment==='To‘langan');
+ let total=paid.reduce((s,o)=>s+o.total,0);
+ let active=a.filter(o=>!['Tayyor','Bekor qilingan'].includes(o.status)).length;
+ v.innerHTML=`
+ <div class="head"><div><h1>Umumiy ko‘rsatkichlar</h1><p>Bugungi savdo va operatsion holat</p></div><button class="gold" onclick="go('neworder')">＋ Yangi buyurtma</button></div>
+ <div class="grid stats">
+ <div class="card"><div class="statlabel">BUGUNGI TUSHUM</div><div class="statvalue">${money(total)}</div><div class="statfoot">To‘langan buyurtmalar</div></div>
+ <div class="card"><div class="statlabel">BUYURTMALAR</div><div class="statvalue">${a.length}</div><div class="statfoot">Bugun qabul qilingan</div></div>
+ <div class="card"><div class="statlabel">JARAYONDA</div><div class="statvalue">${active}</div><div class="statfoot">Faol buyurtmalar</div></div>
+ <div class="card"><div class="statlabel">FAOL MENYU</div><div class="statvalue">${db.products.filter(x=>x.active).length}</div><div class="statfoot">Mahsulotlar</div></div>
+ </div>
+ <div class="grid two">
+ <div class="card"><h3 class="sectiontitle">So‘nggi buyurtmalar</h3>${tableOrders(a.slice().reverse().slice(0,7))}</div>
+ <div class="card"><h3 class="sectiontitle">Tezkor boshqaruv</h3>
+ <div class="grid" style="grid-template-columns:1fr 1fr">
+ <button class="light" onclick="go('neworder')">＋ Buyurtma</button>
+ <button class="light" onclick="go('menu')">☷ Menyu</button>
+ <button class="light" onclick="go('kitchen')">♨ Oshxona</button>
+ <button class="light" onclick="go('cash')">▣ Kassa</button>
+ </div><br><p style="color:var(--green);font-weight:bold">● Tizim faol</p>
+ <small style="color:var(--muted)">Ma’lumotlar brauzerda saqlanadi.</small></div>
+ </div>`;
+}
+function badge(s){
+ let c=s==='Tayyor'?'green':s==='Bekor qilingan'?'red':s==='Yangi'?'blue':'orange';
+ return `<span class="badge ${c}">${s}</span>`;
+}
+function tableOrders(a){
+ if(!a.length)return '<div class="empty">Buyurtmalar mavjud emas</div>';
+ return `<div class="tablewrap"><table><thead><tr><th>№</th><th>Vaqt</th><th>Mijoz</th><th>Summa</th><th>Holat</th><th>To‘lov</th></tr></thead><tbody>
+ ${a.map(o=>`<tr><td>#${String(o.id).slice(-5)}</td><td>${o.time}</td><td>${esc(o.customer||'—')}</td><td><b>${money(o.total)}</b></td><td>${badge(o.status)}</td><td>${o.payment}</td></tr>`).join('')}
+ </tbody></table></div>`;
+}
+function orders(v){
+ v.innerHTML=`<div class="head"><div><h1>Buyurtmalar</h1><p>Barcha buyurtmalar nazorati</p></div><button class="gold" onclick="go('neworder')">＋ Yangi buyurtma</button></div>
+ <div class="card"><div class="toolbar"><input id="searchOrder" placeholder="Mijoz yoki raqam..." oninput="filterOrders()"><select id="filterStatus" onchange="filterOrders()"><option value="">Barcha holatlar</option><option>Yangi</option><option>Tayyorlanmoqda</option><option>Tayyor</option><option>Bekor qilingan</option></select></div><div id="orderTable">${tableOrders(db.orders.slice().reverse())}</div></div>`;
+}
+function filterOrders(){
+ let q=text('searchOrder').toLowerCase(),s=text('filterStatus');
+ let a=db.orders.slice().reverse().filter(o=>(!s||o.status===s)&&(String(o.id).includes(q)||(o.customer||'').toLowerCase().includes(q)));
+ document.getElementById('orderTable').innerHTML=tableOrders(a);
+}
+function neworder(v){
+ cart=[];
+ v.innerHTML=`<div class="head"><div><h1>Yangi buyurtma</h1><p>Mahsulotlarni tanlang va buyurtmani rasmiylashtiring</p></div></div>
+ <div class="orderlayout">
+ <div class="card"><div class="toolbar"><input id="productSearch" placeholder="Mahsulot qidirish..." oninput="drawProducts()"><select id="categoryFilter" onchange="drawProducts()"><option value="">Barcha kategoriyalar</option>${[...new Set(db.products.map(x=>x.category))].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div><div id="productGrid" class="products"></div></div>
+ <div class="card"><h3 class="sectiontitle">Buyurtma tarkibi</h3>
+ <div class="field"><label>MIJOZ / STOL</label><input id="customer" placeholder="Masalan: 4-stol yoki Ali"></div>
+ <div class="field"><label>BUYURTMA TURI</label><select id="orderType"><option>Restoran</option><option>Olib ketish</option><option>Yetkazib berish</option></select></div>
+ <div id="cartItems"><div class="empty">Mahsulot tanlanmagan</div></div>
+ <div class="total"><span>JAMI</span><span id="cartTotal">${money(0)}</span></div>
+ <div class="field"><label>TO‘LOV USULI</label><select id="method"><option>Naqd</option><option>Terminal</option><option>Click / Payme</option></select></div>
+ <div class="field"><label>TO‘LOV HOLATI</label><select id="payment"><option>Kutilmoqda</option><option>To‘langan</option></select></div>
+ <button class="primary full" onclick="submitOrder()">BUYURTMANI SAQLASH</button>
+ </div></div>`;
+ drawProducts();
+}
+function drawProducts(){
+ let q=text('productSearch').toLowerCase(),c=text('categoryFilter');
+ let a=db.products.filter(p=>p.active&&(!c||p.category===c)&&p.name.toLowerCase().includes(q));
+ document.getElementById('productGrid').innerHTML=a.map(p=>`<button class="product" onclick="addCart(${p.id})"><b>${esc(p.name)}</b><small>${esc(p.category)}</small><div class="price">${money(p.price)}</div></button>`).join('')||'<div class="empty">Mahsulot topilmadi</div>';
+}
+function addCart(id){
+ let p=db.products.find(x=>x.id===id),x=cart.find(x=>x.id===id);
+ if(x)x.qty++;else cart.push({...p,qty:1});drawCart();
+}
+function changeQty(id,n){
+ let x=cart.find(x=>x.id===id);if(!x)return;x.qty+=n;
+ if(x.qty<=0)cart=cart.filter(y=>y.id!==id);drawCart();
+}
+function drawCart(){
+ let el=document.getElementById('cartItems');if(!el)return;
+ el.innerHTML=cart.length?cart.map(x=>`<div class="cartline"><b>${esc(x.name)}<br><small>${money(x.price)}</small></b><div class="qty"><button onclick="changeQty(${x.id},-1)">−</button>${x.qty}<button onclick="changeQty(${x.id},1)">＋</button></div></div>`).join(''):'<div class="empty">Mahsulot tanlanmagan</div>';
+ document.getElementById('cartTotal').textContent=money(cart.reduce((s,x)=>s+x.price*x.qty,0));
+}
+function submitOrder(){
+ if(!cart.length)return notify('Mahsulot tanlang');
+ let o={id:id(),date:today(),time:time(),customer:text('customer'),type:text('orderType'),items:cart.map(x=>({id:x.id,name:x.name,price:x.price,qty:x.qty})),total:cart.reduce((s,x)=>s+x.price*x.qty,0),status:'Yangi',payment:text('payment'),method:text('method'),createdBy:user.name};
+ db.orders.push(o);save();cart=[];notify('Buyurtma saqlandi');go('orders');
+}
+function menu(v){
+ v.innerHTML=`<div class="head"><div><h1>Menyu boshqaruvi</h1><p>Taomlar, kategoriyalar va narxlar</p></div><button class="gold" onclick="productModal()">＋ Mahsulot qo‘shish</button></div>
+ <div class="card"><div class="toolbar"><input id="menuSearch" placeholder="Mahsulot qidirish..." oninput="filterMenu()"></div><div id="menuTable">${menuTable(db.products)}</div></div>`;
+}
+function menuTable(a){
+ return `<div class="tablewrap"><table><thead><tr><th>Mahsulot</th><th>Kategoriya</th><th>Narx</th><th>Holat</th><th>Amal</th></tr></thead><tbody>${a.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.category)}</td><td>${money(p.price)}</td><td>${p.active?'Faol':'Yashirilgan'}</td><td><div class="actions"><button class="light small" onclick="productModal(${p.id})">Tahrir</button><button class="light small" onclick="toggleProduct(${p.id})">${p.active?'Yashirish':'Ochish'}</button></div></td></tr>`).join('')}</tbody></table></div>`;
+}
+function filterMenu(){let q=text('menuSearch').toLowerCase();document.getElementById('menuTable').innerHTML=menuTable(db.products.filter(p=>p.name.toLowerCase().includes(q)))}
+function productModal(id){
+ let p=db.products.find(x=>x.id===id)||{name:'',category:'Fast food',price:''};
+ modal(`<h3>${id?'Mahsulotni tahrirlash':'Yangi mahsulot'}</h3><div class="field"><label>NOMI</label><input id="mName" value="${esc(p.name)}"></div><div class="field"><label>KATEGORIYA</label><input id="mCategory" value="${esc(p.category)}"></div><div class="field"><label>NARX</label><input id="mPrice" type="number" value="${p.price}"></div><button class="primary full" onclick="saveProduct(${id||0})">SAQLASH</button>`);
+}
+function saveProduct(productId){
+ let name=text('mName'),category=text('mCategory'),price=Number(text('mPrice'));
+ if(!name||!category||price<=0)return notify('Ma’lumotlarni to‘ldiring');
+ if(productId)Object.assign(db.products.find(x=>x.id===productId),{name,category,price});
+ else db.products.push({id:Date.now(),name,category,price,active:true});
+ save();closeModal();render();notify('Menyu saqlandi');
+}
+function toggleProduct(id){let p=db.products.find(x=>x.id===id);p.active=!p.active;save();render()}
+function kitchen(v){
+ let a=db.orders.filter(o=>!['Tayyor','Bekor qilingan'].includes(o.status)).reverse();
+ v.innerHTML=`<div class="head"><div><h1>Oshxona ekrani</h1><p>Faol buyurtmalar</p></div><button class="light" onclick="render()">Yangilash</button></div>
+ <div class="grid kitchen">${a.map(o=>`<div class="ticket"><h3>#${String(o.id).slice(-5)}</h3><p style="color:#8993a3">${o.time} · ${esc(o.customer||o.type)}</p><ul>${o.items.map(i=>`<li>${esc(i.name)} × ${i.qty}</li>`).join('')}</ul><button class="gold full" onclick="advance(${o.id})">${o.status==='Yangi'?'Qabul qilish':'Tayyor deb belgilash'}</button></div>`).join('')||'<div class="card empty">Faol buyurtma yo‘q</div>'}</div>`;
+}
+function advance(id){
+ let o=db.orders.find(x=>x.id===id);o.status=o.status==='Yangi'?'Tayyorlanmoqda':'Tayyor';save();render();
+}
+function cash(v){
+ let a=todayOrders(),paid=a.filter(o=>o.payment==='To‘langan'),unpaid=a.filter(o=>o.payment!=='To‘langan');
+ let sum=method=>paid.filter(o=>o.method===method).reduce((s,o)=>s+o.total,0);
+ v.innerHTML=`<div class="head"><div><h1>Kassa</h1><p>Bugungi to‘lovlar nazorati</p></div></div>
+ <div class="grid stats">
+ <div class="card"><div class="statlabel">JAMI TUSHUM</div><div class="statvalue">${money(paid.reduce((s,o)=>s+o.total,0))}</div></div>
+ <div class="card"><div class="statlabel">NAQD</div><div class="statvalue">${money(sum('Naqd'))}</div></div>
+ <div class="card"><div class="statlabel">TERMINAL</div><div class="statvalue">${money(sum('Terminal'))}</div></div>
+ <div class="card"><div class="statlabel">KUTILAYOTGAN</div><div class="statvalue">${money(unpaid.reduce((s,o)=>s+o.total,0))}</div></div>
+ </div><div class="card"><h3 class="sectiontitle">To‘lov kutilayotgan buyurtmalar</h3>
+ ${unpaid.length?`<div class="tablewrap"><table><thead><tr><th>Buyurtma</th><th>Mijoz</th><th>Summa</th><th>Amal</th></tr></thead><tbody>${unpaid.map(o=>`<tr><td>#${String(o.id).slice(-5)}</td><td>${esc(o.customer)}</td><td>${money(o.total)}</td><td><button class="light small" onclick="markPaid(${o.id})">To‘landi</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Kutilayotgan to‘lov yo‘q</div>'}</div>`;
+}
+function markPaid(id){db.orders.find(x=>x.id===id).payment='To‘langan';save();render()}
+function staff(v){
+ v.innerHTML=`<div class="head"><div><h1>Xodimlar</h1><p>Alohida login va parollar</p></div><button class="gold" onclick="staffModal()">＋ Xodim qo‘shish</button></div>
+ <div class="card"><div class="tablewrap"><table><thead><tr><th>Ism</th><th>Login</th><th>Lavozim</th><th>Holat</th><th>Amal</th></tr></thead><tbody>
+ ${db.users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${esc(u.role)}</td><td>${u.active===false?'Bloklangan':'Faol'}</td><td>${u.id!==user.id?`<button class="light small" onclick="toggleStaff(${u.id})">${u.active===false?'Faollashtirish':'Bloklash'}</button>`:'Joriy hisob'}</td></tr>`).join('')}
+ </tbody></table></div></div>`;
+}
+function staffModal(){
+ modal(`<h3>Yangi xodim</h3><div class="field"><label>ISM</label><input id="sName"></div><div class="field"><label>LOGIN</label><input id="sUser"></div><div class="field"><label>PAROL</label><input id="sPass" type="password"></div><div class="field"><label>LAVOZIM</label><select id="sRole"><option>Admin</option><option>Kassir</option><option>Oshpaz</option><option>Kuryer</option><option>Ofitsiant</option></select></div><button class="primary full" onclick="saveStaff()">XODIMNI SAQLASH</button>`);
+}
+function saveStaff(){
+ let name=text('sName'),username=text('sUser'),p=document.getElementById('sPass').value;
+ if(!name||!username||p.length<6)return notify('Maydonlarni to‘liq to‘ldiring');
+ if(db.users.some(x=>x.username===username))return notify('Login band');
+ db.users.push({id:id(),name,username,password:hash(p),role:text('sRole'),active:true});save();closeModal();render();notify('Xodim qo‘shildi');
+}
+function toggleStaff(id){let u=db.users.find(x=>x.id===id);u.active=u.active===false;save();render()}
+function reports(v){
+ let paid=db.orders.filter(x=>x.payment==='To‘langan'),total=paid.reduce((s,o)=>s+o.total,0);
+ v.innerHTML=`<div class="head"><div><h1>Hisobotlar</h1><p>Savdo va buyurtmalar tahlili</p></div><button class="light" onclick="exportCSV()">CSV yuklab olish</button></div>
+ <div class="grid stats"><div class="card"><div class="statlabel">UMUMIY TUSHUM</div><div class="statvalue">${money(total)}</div></div><div class="card"><div class="statlabel">TO‘LANGAN BUYURTMALAR</div><div class="statvalue">${paid.length}</div></div><div class="card"><div class="statlabel">O‘RTACHA CHEK</div><div class="statvalue">${money(paid.length?total/paid.length:0)}</div></div><div class="card"><div class="statlabel">JAMI BUYURTMALAR</div><div class="statvalue">${db.orders.length}</div></div></div>
+ <div class="card"><h3 class="sectiontitle">Barcha buyurtmalar</h3>${tableOrders(db.orders.slice().reverse())}</div>`;
+}
+function settings(v){
+ v.innerHTML=`<div class="head"><div><h1>Sozlamalar</h1><p>Tizim va ma’lumotlar xavfsizligi</p></div></div>
+ <div class="grid two">
+ <div class="card"><h3 class="sectiontitle">Zaxira nusxasi</h3><p style="color:#8993a3">Ma’lumotlaringizni fayl qilib saqlab oling.</p><button class="primary" onclick="backup()">ZAXIRA YUKLAB OLISH</button><div class="field"><label>ZAXIRA FAYLIDAN TIKLASH</label><input type="file" id="restoreFile" accept=".json"></div><button class="light" onclick="restore()">TIKLASH</button></div>
+ <div class="card"><h3 class="sectiontitle">Parolni almashtirish</h3><div class="field"><label>YANGI PAROL</label><input id="pass1" type="password"></div><div class="field"><label>QAYTA KIRITING</label><input id="pass2" type="password"></div><button class="primary" onclick="changePassword()">PAROLNI SAQLASH</button></div>
+ </div>
+ <p style="background:#fff4df;padding:15px;border-radius:8px;color:#855e1a;font-size:12px;margin-top:17px">Muhim: bu bitta faylli lokal versiya. Ma’lumotlar aynan shu brauzerda saqlanadi. Boshqa telefon va kompyuter bilan ishlash uchun keyinchalik onlayn serverga joylashtirish kerak.</p>`;
+}
+function changePassword(){
+ let a=document.getElementById('pass1').value,b=document.getElementById('pass2').value;
+ if(a.length<6||a!==b)return notify('Parollar mos emas');
+ db.users.find(x=>x.id===user.id).password=hash(a);save();notify('Parol yangilandi');
+}
+function backup(){
+ let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download='hiyobon-cafe-backup.json';a.click();URL.revokeObjectURL(a.href);
+}
+function restore(){
+ let f=document.getElementById('restoreFile').files[0];if(!f)return notify('Faylni tanlang');
+ let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.users||!x.products||!x.orders)throw Error();if(!confirm('Hozirgi ma’lumotlar almashtiriladi. Davom etasizmi?'))return;db=x;save();location.reload()}catch(e){notify('Fayl noto‘g‘ri')}};r.readAsText(f);
+}
+function exportCSV(){
+ let rows=[['Buyurtma','Sana','Vaqt','Mijoz','Summa','Holat','To‘lov'],...db.orders.map(o=>[o.id,o.date,o.time,o.customer,o.total,o.status,o.payment])];
+ let csv='\uFEFF'+rows.map(r=>r.map(x=>'"'+String(x??'').replaceAll('"','""')+'"').join(';')).join('\n');
+ let a=document.createElement('a'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'});a.href=URL.createObjectURL(blob);a.download='hiyobon-hisobot.csv';a.click();
+}
+function modal(content){document.getElementById('modalRoot').innerHTML=`<div class="modalbg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><b>HIYOBON CAFE</b><button class="light" onclick="closeModal()">✕</button></div><hr style="border:0;border-top:1px solid #eee;margin:15px 0">${content}</div></div>`}
+function closeModal(){document.getElementById('modalRoot').innerHTML=''}
+showLogin();
+</script>
+</body>
+</html>
